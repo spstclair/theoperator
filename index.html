@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Operator — AI Assistants for Founders</title>
+<meta name="description" content="We run the background. You run the business. Done-for-you AI assistants built for busy founders and business owners.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #080808;
+    --dark: #111111;
+    --card: #161616;
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.15);
+    --gold-line: rgba(201,168,76,0.25);
+    --white: #f0ece3;
+    --muted: #7a7060;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--serif);
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--gold-line);
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
+
+  /* Gold radial glow */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+  }
+
+  .hero-rule {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 200px;
+    margin: 0 auto 32px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+  .hero-rule::before, .hero-rule::after {
+    content: ''; flex: 1; height: 1px; background: var(--gold-line);
+  }
+  .hero-rule-dot {
+    width: 5px; height: 5px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.6s forwards;
+  }
+
+  .hero-cta-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 18px 40px;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .hero-note {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 1.4s forwards;
+  }
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--gold-line);
+  }
+
+  /* ── THE PROBLEM ── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    background: var(--gold-line);
+    border: 1px solid var(--gold-line);
+    margin-top: 48px;
+  }
+
+  .problem-item {
+    background: var(--dark);
+    padding: 36px 32px;
+  }
+
+  .problem-icon {
+    font-size: 24px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .problem-item h3 {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .problem-item p {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .problem-headline {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--white);
+  }
+  .problem-headline em { font-style: italic; color: var(--gold); }
+
+  /* ── WHAT WE BUILD ── */
+  .services-wrap {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .service-card {
+    background: var(--card);
+    border: 1px solid var(--gold-line);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .service-card:hover { border-color: var(--gold); }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .service-name {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .service-desc {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .service-price {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--white);
+    letter-spacing: 0.05em;
+  }
+
+  .service-price span {
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-steps {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .how-step {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 0 24px;
+  }
+
+  .how-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .how-num {
+    width: 44px; height: 44px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gold);
+    flex-shrink: 0;
+    background: var(--black);
+    position: relative;
+    z-index: 1;
+  }
+
+  .how-line {
+    flex: 1;
+    width: 1px;
+    background: var(--gold-line);
+    margin: 0;
+  }
+  .how-step:last-child .how-line { display: none; }
+
+  .how-content {
+    padding: 8px 0 48px;
+  }
+
+  .how-content h3 {
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .how-content p {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .how-timing {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+    border: 1px solid var(--gold-line);
+    padding: 5px 12px;
+  }
+
+  /* ── DIVIDER ── */
+  .full-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--gold-line);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── CREDIBILITY ── */
+  .cred-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+    margin-top: 48px;
+  }
+
+  @media (max-width: 600px) {
+    .cred-wrap { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  .cred-name {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--white);
+    margin-bottom: 8px;
+    line-height: 1.1;
+  }
+
+  .cred-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .cred-bio {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .cred-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--gold-line);
+    border: 1px solid var(--gold-line);
+  }
+
+  .cred-stat {
+    background: var(--card);
+    padding: 24px 28px;
+  }
+
+  .cred-stat-num {
+    font-size: 36px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .cred-stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    text-align: center;
+    padding: 100px 24px 120px;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(36px, 7vw, 64px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+  .cta-section h2 em { font-style: italic; color: var(--gold); }
+
+  .cta-section p {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    margin-bottom: 40px;
+    line-height: 1.7;
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-secondary {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--gold-line);
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .services-wrap { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">The Operator</div>
+  <a href="YOUR_CALENDLY_LINK_HERE" class="nav-cta">Book Free Call</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-rule"><div class="hero-rule-dot"></div></div>
+  <div class="hero-eyebrow">AI Assistants for Founders &amp; Business Owners</div>
+  <h1>We run the<br><em>background.</em></h1>
+  <div class="hero-sub">You run the business.</div>
+  <div class="hero-cta-wrap">
+    <a href="YOUR_CALENDLY_LINK_HERE" class="btn-primary">Book Your Free AI Audit — 20 Min</a>
+    <span class="hero-note">No pitch &nbsp;·&nbsp; No commitment &nbsp;·&nbsp; Just clarity</span>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</div>
+
+<!-- THE PROBLEM -->
+<section>
+  <div class="section-label">The Problem</div>
+  <h2 class="problem-headline">You didn't build a business<br>to spend your days in <em>your inbox.</em></h2>
+  <div class="problem-grid">
+    <div class="problem-item">
+      <span class="problem-icon">📧</span>
+      <h3>Email overload</h3>
+      <p>Hundreds of messages a week. Most of it noise. Hours lost sorting, replying, chasing.</p>
+    </div>
+    <div class="problem-item">
+      <span class="problem-icon">📋</span>
+      <h3>Admin that never ends</h3>
+      <p>Scheduling, follow-ups, data entry, reporting. All of it eating time you don't have.</p>
+    </div>
+    <div class="problem-item">
+      <span class="problem-icon">🔁</span>
+      <h3>CRM left to rot</h3>
+      <p>Leads slipping through. Follow-ups missed. Opportunities gone because the system ran you instead of the other way around.</p>
+    </div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- WHAT WE BUILD -->
+<section>
+  <div class="section-label">What We Build</div>
+  <h2 class="problem-headline">A done-for-you AI assistant.<br><em>Built. Integrated. Running.</em></h2>
+  <div class="services-wrap">
+
+    <div class="service-card">
+      <div class="service-tag">Starter</div>
+      <div class="service-name">AI Starter Sprint</div>
+      <div class="service-desc">One targeted AI automation built and live. Email triage, lead follow-up, or admin — whichever hurts most. Fast and focused.</div>
+      <div class="service-price">£997 &nbsp;<span>50% deposit to start</span></div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-tag">Most Popular</div>
+      <div class="service-name">AI Founder Pack</div>
+      <div class="service-desc">Three automations built, integrated, and handed over. Covers email, CRM, and one additional area of your choice. Full 30-day support window.</div>
+      <div class="service-price">£2,500 &nbsp;<span>50% deposit to start</span></div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-tag">Full Build</div>
+      <div class="service-name">AI Full Assistant</div>
+      <div class="service-desc">A complete AI assistant covering email, CRM, and admin — plus ongoing monthly maintenance. Your business runs in the background. You stay in front.</div>
+      <div class="service-price">£5,000 &nbsp;<span>50% deposit to start</span></div>
+    </div>
+
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="section-label">How It Works</div>
+  <h2 class="problem-headline">From call to <em>running</em><br>in days — not months.</h2>
+  <div class="how-steps">
+
+    <div class="how-step">
+      <div class="how-left">
+        <div class="how-num">01</div>
+        <div class="how-line"></div>
+      </div>
+      <div class="how-content">
+        <h3>Free AI Audit Call</h3>
+        <p>We spend 20 minutes understanding where your time goes. No pitch — just a clear picture of what's possible and what I'd build for you.</p>
+        <span class="how-timing">20 minutes</span>
+      </div>
+    </div>
+
+    <div class="how-step">
+      <div class="how-left">
+        <div class="how-num">02</div>
+        <div class="how-line"></div>
+      </div>
+      <div class="how-content">
+        <h3>Intake &amp; Scoping</h3>
+        <p>A short five-question intake form. I map your tools, your workflow, and your biggest bottlenecks. This takes you less than ten minutes.</p>
+        <span class="how-timing">Same day</span>
+      </div>
+    </div>
+
+    <div class="how-step">
+      <div class="how-left">
+        <div class="how-num">03</div>
+        <div class="how-line"></div>
+      </div>
+      <div class="how-content">
+        <h3>Build &amp; Integration</h3>
+        <p>I build your AI assistant, integrate it into your existing tools, and test everything end to end. You receive progress updates at each milestone.</p>
+        <span class="how-timing">Within 48 hours of intake</span>
+      </div>
+    </div>
+
+    <div class="how-step">
+      <div class="how-left">
+        <div class="how-num">04</div>
+        <div class="how-line"></div>
+      </div>
+      <div class="how-content">
+        <h3>Handover &amp; Walkthrough</h3>
+        <p>A recorded walkthrough, plain-English documentation, and a 30-day support window. It runs. You don't have to touch it.</p>
+        <span class="how-timing">Agreed delivery date</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- WHO I AM -->
+<section>
+  <div class="section-label">Who's Behind It</div>
+  <div class="cred-wrap">
+    <div>
+      <div class="cred-name">Dr Sheldon<br>St. Clair</div>
+      <div class="cred-title">FRSA &nbsp;·&nbsp; Founder, The Operator</div>
+      <div class="cred-bio">Governance and PMO professional, portfolio property investor, and AI implementation specialist. I build AI systems that actually work for the founders who need them most — the ones too busy to figure it out themselves.</div>
+    </div>
+    <div class="cred-stats">
+      <div class="cred-stat">
+        <div class="cred-stat-num">10+</div>
+        <div class="cred-stat-label">Hours saved per client per week</div>
+      </div>
+      <div class="cred-stat">
+        <div class="cred-stat-num">48hr</div>
+        <div class="cred-stat-label">Average time from intake to live build</div>
+      </div>
+      <div class="cred-stat">
+        <div class="cred-stat-num">100%</div>
+        <div class="cred-stat-label">Done for you — no tech skills required</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="section-label" style="justify-content:center; margin-bottom:32px;">Ready?</div>
+  <h2>Stop managing it.<br><em>Let us run it.</em></h2>
+  <p>Book a free 20-minute AI Audit Call. Walk away knowing exactly what could be automated in your business — and what it would cost.</p>
+  <div class="cta-buttons">
+    <a href="YOUR_CALENDLY_LINK_HERE" class="btn-primary">Book Your Free Audit Call</a>
+    <span class="btn-secondary">Free &nbsp;·&nbsp; 20 minutes &nbsp;·&nbsp; No commitment</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">The Operator</div>
+  <div class="footer-copy">We run the background. You run the business. &nbsp;·&nbsp; London, UK &nbsp;·&nbsp; © 2026</div>
+</footer>
+
+</body>
+</html>
